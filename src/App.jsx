@@ -1,20 +1,22 @@
 import React, { useState } from "react";
 import { fetchWeather } from "./api/fetchWeather";
-
 const App = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [cityName, setCityName] = useState("");
   const [error, setError] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const fetchData = async (e) => {
     if (e.key === "Enter") {
       try {
+        setLoading(true);
         const data = await fetchWeather(cityName);
         setWeatherData(data);
         setCityName("");
         setError(null);
       } catch (error) {
-        setError(error.message);
+        setError("Failed to fetch weather data. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -27,6 +29,7 @@ const App = () => {
         onChange={(e) => setCityName(e.target.value)}
         onKeyDown={fetchData}
       />
+      {loading && <p>Loading...</p>}
       {error && <div style={{ color: "red" }}>{error}</div>}
       {weatherData && (
         <div>
@@ -51,5 +54,4 @@ const App = () => {
     </div>
   );
 };
-
 export default App;
